@@ -28,6 +28,38 @@ class WebCalculator(object):
     def _styles(self):
         return """
         <style>
+        body {
+			margin: 0;
+		}
+	
+		ul {
+		    list-style-type: none;
+		    margin: 0;
+		    padding: 0;
+		    width: 20%;
+		    background-color: #f1f1f1;
+		    position: fixed;
+		    height: 100%;
+		    overflow: auto;
+		}
+		
+		li a {
+		    display: block;
+		    color: #000;
+		    padding: 8px 0 8px 16px;
+		    text-decoration: none;
+		}
+		
+		li a.active {
+		    background-color: #4CAF50;
+		    color: white;
+		}
+		
+		li a:hover:not(.active) {
+		    background-color: #555;
+		    color: white;
+		}
+
         input[type=text] {
             width: 100%;
             box-sizing: border-box;
@@ -37,7 +69,7 @@ class WebCalculator(object):
             border-radius: 8px;
             font-size: 18px;
             text-align: center;
-        }
+		}
         .button {
             width: 100%;
             box-sizing: border-box;
@@ -50,13 +82,14 @@ class WebCalculator(object):
             text-decoration: none;
             font-size: 18px;
             border-radius: 8px;
-        }
+		}
         div {
+			margin-left: 25%;
             width: 25%;
             border-radius: 5px;
             background-color: #f2f2f2;
             padding: 40px;
-        }
+		}
         h2 {
             text-align: left;
         }
@@ -77,14 +110,20 @@ class WebCalculator(object):
         
         return """
         <body>
+        <ul>
+			<li><a class="active" href="#converters">Units Converters</a></li>
+			<li><a href="#eecalc">Electronics Calculators</a></li>
+            <li><a href="#simplecalc">Simple Calculator</a></li>
+            <li><a href="#moon">Moon Almanac</a></li>
+        </ul>
         <div>
-        <form method="get" action="calculate">
-        <h2>Enter Temperature: </h2><br>
-        <input type="text" value= %.1f name="temperature" /> <br>
-        <button class="button" type="submit" name="calc" value="F2C">&#176;F &#8680 &#176;C</button>
-        <button class="button" type="submit" name="calc" value="C2F">&#176;C &#8680 &#176;F</button>
-        <br>
-        <h2>%.1f &#176;%s is %.1f &#176;%s</h2>
+	        <form method="get" action="calculate">
+	        <h2>Enter Temperature: </h2><br>
+	        <input type="text" name="temperature" value= %.1f /> <br>
+	        <button class="button" type="submit" name="calc" value="F2C">&#176;F &#8680 &#176;C</button>
+	        <button class="button" type="submit" name="calc" value="C2F">&#176;C &#8680 &#176;F</button>
+	        <br>
+	        <h2>%.1f &#176;%s is %.1f &#176;%s</h2>
         </form> </div> </body>""" % (temperature, temperature, units1, result, units2) 
 
     def _footer(self):
