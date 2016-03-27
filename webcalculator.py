@@ -20,15 +20,20 @@ import os.path
 import cherrypy
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-print(current_dir)
 
 class WebCalculator(object):
+    _data = {
+        "fromTemp": "40.0",
+        "toTemp": "104.0",
+        "fromDist": "3.0",
+        "toDist": "5.0"
+        }
+        
     def _header(self):
         return """
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Web Calculators</title>
             <title>Web Calculators</title>
             <link rel="stylesheet" type="text/css" href="webcalculator.css">
         </head>"""
@@ -48,13 +53,18 @@ class WebCalculator(object):
         
         return """
         <body>
+        <div class="header"> </div>
         <ul>
             <li><a class="active" href="#converters">Units Converters</a></li>
             <li><a href="#eecalc">Electronics Calculators</a></li>
             <li><a href="#simplecalc">Simple Calculator</a></li>
             <li><a href="#moon">Moon Almanac</a></li>
-        </ul>
-        <div>
+        </ul> </div>
+
+        <div class="row">
+        <div class="col-1"> </div>
+
+        <div class="col-3">
             <form method="get" action="calculate">
             <h2>Enter Temperature: </h2><br>
             <input type="text" name="temperature" value= %.1f /> <br>
@@ -62,8 +72,12 @@ class WebCalculator(object):
             <button class="button" type="submit" name="calc" value="c2f">&#176;C &#8680 &#176;F</button>
             <br>
             <h2>%.1f &#176;%s is %.1f &#176;%s</h2>
-        </form> </div>
-        <div>
+            </form>
+        </div>
+
+        <div class="col-1"> </div>
+
+        <div class="col-3">
             <form method="get" action="calculate">
             <h2>Enter Distance: </h2><br>
             <input type="text" name="temperature" value= %.1f /> <br>
@@ -71,8 +85,13 @@ class WebCalculator(object):
             <button class="button" type="submit" name="calc" value="km2mi">Kilometers &#8680 Miles</button>
             <br>
             <h2>%.1f &#176;%s is %.1f &#176;%s</h2>
-        </form> </div> </body>""" % (temperature, temperature, units1, result, units2,
-                                     temperature, temperature, units1, result, units2) 
+            </form>
+        </div>
+
+        <div class="col-1" </div>
+
+        </body>""" % (temperature, temperature, units1, result, units2,
+                      temperature, temperature, units1, result, units2) 
 
     def _footer(self):
         return """
@@ -92,7 +111,7 @@ class WebCalculator(object):
 
     @cherrypy.expose
     def index(self):
-        return (self._header() + self._body(40.0, 'C2F') + self._footer())
+        return (self._header() + self._body(40.0, 'c2f') + self._footer())
 
     @cherrypy.expose
     def calculate(self, calc, temperature):
