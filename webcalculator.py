@@ -23,10 +23,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 class WebCalculator(object):
     _data = {
-        "fromTemp": "40.0",
-        "toTemp": "104.0",
-        "fromDist": "3.0",
-        "toDist": "5.0"
+        "fromTemp": "40.0&#176;C", "toTemp": "104.0&#176;F",
+        "fromDist": "3.107 mi", "toDist": "5.000 km"
         }
         
     def _header(self):
@@ -37,25 +35,17 @@ class WebCalculator(object):
             <title>Web Calculators</title>
             <link rel="stylesheet" type="text/css" href="webcalculator.css">
         </head>"""
-
-    def _body(self, temperature, calc):
-        if calc.endswith('c'):
-            result = self._f2c(temperature)
-            units1 = 'F'
-            units2 = 'C'
-        elif calc.endswith('f'):
-            result = self._c2f(temperature)
-            units1 = 'C'
-            units2 = 'F'
-        else:
-            result = 999.9
-            units1 = units2 = 'X'
         
+    def _footer(self):
+        return """
+        </html>"""
+
+    def _body(self):
         return """
         <body>
         <div class="header"> </div>
         <ul>
-            <li><a class="active" href="#converters">Units Converters</a></li>
+            <li><a class="active" href="http://localhost:8080">Units Converters</a></li>
             <li><a href="#eecalc">Electronics Calculators</a></li>
             <li><a href="#simplecalc">Simple Calculator</a></li>
             <li><a href="#moon">Moon Almanac</a></li>
@@ -67,11 +57,11 @@ class WebCalculator(object):
         <div class="col-3">
             <form method="get" action="calculate">
             <h2>Enter Temperature: </h2><br>
-            <input type="text" name="temperature" value= %.1f /> <br>
-            <button class="button" type="submit" name="calc" value="f2c">&#176;F &#8680 &#176;C</button>
-            <button class="button" type="submit" name="calc" value="c2f">&#176;C &#8680 &#176;F</button>
+            <input type="text" name="value" value= %s /> <br>
+            <button class="button" type="submit" name="calc" value="f2c">F &#8680 C</button>
+            <button class="button" type="submit" name="calc" value="c2f">C &#8680 F</button>
             <br>
-            <h2>%.1f &#176;%s is %.1f &#176;%s</h2>
+            <h2>%s is %s</h2>
             </form>
         </div>
 
@@ -80,28 +70,24 @@ class WebCalculator(object):
         <div class="col-3">
             <form method="get" action="calculate">
             <h2>Enter Distance: </h2><br>
-            <input type="text" name="temperature" value= %.1f /> <br>
+            <input type="text" name="value" value= %s /> <br>
             <button class="button" type="submit" name="calc" value="mi2km">Miles &#8680 Kilometers</button>
             <button class="button" type="submit" name="calc" value="km2mi">Kilometers &#8680 Miles</button>
             <br>
-            <h2>%.1f &#176;%s is %.1f &#176;%s</h2>
+            <h2>%s is %s</h2>
             </form>
         </div>
 
         <div class="col-1" </div>
 
-        </body>""" % (temperature, temperature, units1, result, units2,
-                      temperature, temperature, units1, result, units2) 
-
-    def _footer(self):
-        return """
-        </form> </body> </html>"""
+        </body>""" % (self._data['fromTemp'][:-7], self._data['fromTemp'], self._data['toTemp'],
+                      self._data['fromDist'][:-2], self._data['fromDist'], self._data['toDist'])
 
     def _c2f(self, temp):
-        return 9.0 * temp / 5.0 + 32.0
+        return '%.1f&#176;F' % (9.0 * float(temp) / 5.0 + 32.0)
 
     def _f2c(self, temp):
-        return 5.0 * (temp - 32.0) / 9.0
+        return "%.1f&#176;C" % (5.0 * (float(temp) - 32.0) / 9.0)
     
     def _mi2km(self, dist):
         return 1.609344 * dist
@@ -111,11 +97,27 @@ class WebCalculator(object):
 
     @cherrypy.expose
     def index(self):
-        return (self._header() + self._body(40.0, 'c2f') + self._footer())
+        return (self._header() + self._body() + self._footer())
 
     @cherrypy.expose
-    def calculate(self, calc, temperature):
-        return (self._header() + self._body(float(temperature), calc) + self._footer())
+    def calculate(self, calc, value):
+        if calc.endswith('c'):
+            self._data['toTemp'] = '%.1f&#176;C' % (5.0 * (float(value) - 32.0) / 9.0)
+            self._data['fromTemp'] = '%.1f&#176;F' % float(value)
+        elif calc.endswith('f'):
+            self._data['toTemp'] = '%.1f&#176;F' % (9.0 * float(value) / 5.0 + 32.0)
+            self._data['fromTemp'] = '%.1f&#176;C' % float(value)
+        elif calc.endswith('km'):
+            self._data['toDist'] = '%.3f km' % (float(value) * 1.609344)
+            self._data['fromDist'] = '%.3f mi' % float(value)
+        elif calc.endswith('mi'):
+            self._data['toDist'] = '%.3f mi' % (float(value) / 1.609344)
+            self._data['fromDist'] = '%.3f km' % float(value)
+        else:
+            result = '999.9'
+            units1 = units2 = 'X'
+        
+        return (self._header() + self._body() + self._footer())
 
 # end of class WebCalculator
 
